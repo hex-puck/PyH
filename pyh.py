@@ -144,7 +144,10 @@ class Tag(list):
             if n != 'txt' and n != 'open':
                 if n == 'cl':
                     n = 'class'
-                result += ' %s="%s"' % (n, v)
+                if v == '':
+                    result += ' %s' % n
+                else:
+                    result += ' %s="%s"' % (n, v)
         return result
 
     def selfClose(self):
