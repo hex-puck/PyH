@@ -17,13 +17,53 @@ nl = '\n'
 doctype = '<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">\n'
 charset = '<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />\n'
 
-tags = ['html', 'body', 'head', 'link', 'meta', 'div', 'p', 'form', 'legend',
-        'input', 'select', 'span', 'b', 'i', 'option', 'img', 'script',
-        'table', 'tr', 'td', 'th', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
-        'fieldset', 'a', 'title', 'body', 'head', 'title', 'script', 'br', 'table',
-        'ul', 'li', 'ol']
+# https://developer.mozilla.org/en-US/docs/Web/HTML/Element
+tags = [
+    # Main root
+    'html',
+    # Document metadata
+    'base', 'head', 'link', 'meta', 'style', 'title',
+    # Sectioning root
+    'body',
+    # Content sectioning
+    'address', 'article', 'aside', 'footer', 'header',
+    'h1', 'h2', 'h3', 'h4', 'h5', 'h6',
+    'hgroup', 'main', 'nav', 'section',
+    # Text content (omit duplicated main element)
+    'blockquote', 'dd', 'div', 'dl', 'dt', 'figcaption',
+    'figure', 'hr', 'li', 'ol', 'p', 'pre', 'ul',
+    # Inline text semantics
+    'a', 'abbr', 'b', 'bdi', 'bdo', 'br', 'cite', 'code', 'data', 'dfn', 'em',
+    'i', 'kbd', 'mark', 'q', 'rb', 'rp', 'rt', 'rtc', 'ruby', 's', 'samp',
+    'small', 'span', 'strong', 'sub', 'sup', 'time', 'u', 'var', 'wbr',
+    # Image and multimedia
+    'area', 'audio', 'img', 'map', 'track', 'video',
+    # Embedded content
+    'embed', 'iframe', 'object', 'param', 'picture', 'source',
+    # Scripting
+    'canvas', 'noscript', 'script',
+    # Demarcating edits
+    'del', 'ins',
+    # Table content
+    'caption', 'col', 'colgroup', 'table', 'tbody',
+    'td', 'tfoot', 'th', 'thead', 'tr',
+    # Forms
+    'button', 'datalist', 'fieldset', 'form', 'input', 'label', 'legend',
+    'meter', 'optgroup', 'option', 'output', 'progress', 'select', 'textarea',
+    # Interactive elements
+    'details', 'dialog', 'menu', 'summary',
+    # Web Components
+    'slot', 'template',
+    # Obsolete and deprecated elements (omit it)
+]
 
-selfClose = ['input', 'img', 'link', 'br']
+self_close = ['area', 'base', 'br', 'col', 'command', 'embed',
+              'hr', 'img', 'input', 'keygen', 'link', 'meta',
+              'param', 'source', 'track', 'wbr']
+
+self_close_when_attr_appear = {
+    'colgroup': {'span'},
+}
 
 
 class Tag(list):
@@ -108,7 +148,16 @@ class Tag(list):
         return result
 
     def selfClose(self):
-        return self.tagname in selfClose
+        if self.tagname in self_close:
+            return True
+
+        if self.tagname in self_close_when_attr_appear:
+            self_close_attrs = self_close_when_attr_appear[self.tagname]
+            for attr in self.attributes.keys():
+                if attr in self_close_attrs:
+                    return True
+
+        return False
 
 
 def TagFactory(name):
