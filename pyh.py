@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # @file: pyh.py
 # @purpose: a HTML tag generator
 # @author: Emmanuel Turlay <turlay@cern.ch>
